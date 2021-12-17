@@ -17,13 +17,15 @@ class LargeFileField extends Field
     
     public function render()
     {
-        $name = str_replace('[', '\\\[', str_replace(']', '\\\]', $this->formatName($this->column)));
-
-        $this->script = <<<SRC
-
-        $('#{$name}-file').bootstrapFileInput();
-        $('#{$name}-file').change(function(){
-             aetherupload('{$name}', this, '$this->group').success(getPath).upload('{$name}');
+        $(".controls input[type='file']").bind('change',function(){
+            let name = $(this).attr('id')
+            name = name.slice(0, -9)
+            console.log(name)
+            name = name.replaceAll('[','\\\[')
+            name = name.replaceAll(']','\\\]')
+            $('#'+name+'-resource').bootstrapFileInput();
+            console.log(name)
+            aetherupload(name, this).setGroup('{$this->group}').setSavedPathField('#'+name+'-savedpath').setPreprocessRoute('/aetherupload/preprocess').setUploadingRoute('/aetherupload/uploading').setLaxMode(false).success().upload(name)
         });
 
 SRC;
